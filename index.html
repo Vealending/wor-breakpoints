@@ -28,8 +28,8 @@
   select:focus-visible,input:focus-visible,button:focus-visible,summary:focus-visible,.q:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
 
   /* ---- hero header ---- */
-  .hero{display:grid;grid-template-columns:296px minmax(0,1fr) 260px;grid-template-rows:132px auto;overflow:hidden}
-  .bust{grid-row:1;grid-column:1;background-size:296px 132px;background-repeat:no-repeat;background-position:left top;
+  .hero{display:grid;grid-template-columns:296px minmax(0,1fr) 260px;grid-template-rows:132px auto}
+  .bust{grid-row:1;grid-column:1;border-top-left-radius:10px;overflow:hidden;background-size:296px 132px;background-repeat:no-repeat;background-position:left top;
     -webkit-mask-image:linear-gradient(90deg,#000 55%,transparent 100%);mask-image:linear-gradient(90deg,#000 55%,transparent 100%)}
   .bust.none{background:radial-gradient(160px 100px at 30% 60%,var(--panel3),transparent)}
   .info{grid-row:1;grid-column:2;display:flex;flex-direction:column;justify-content:center;gap:10px;padding:14px 16px 14px 0;min-width:0}
@@ -44,7 +44,21 @@
   .usub b{color:var(--gold);font-weight:600}
   .pick{grid-row:1;grid-column:3;display:grid;align-content:center;padding:14px 16px 14px 0;min-width:0}
   .lab{font-size:.75rem;color:var(--muted);letter-spacing:.04em;text-transform:uppercase;margin-bottom:4px}
-  .pick select{width:100%;height:40px;padding:6px 10px;border:1px solid var(--gold2);border-radius:6px;background:var(--panel2);color:var(--ink);font:600 1rem "IBM Plex Sans",sans-serif}
+  .pick{position:relative}
+  .hbtn{width:100%;height:44px;display:flex;align-items:center;gap:10px;padding:4px 10px 4px 4px;border:1px solid var(--line);border-radius:6px;background:var(--panel2);color:var(--ink);font:600 1rem "IBM Plex Sans",sans-serif;cursor:pointer;text-align:left}
+  .hbtn:hover{border-color:var(--gold)}
+  .hbtn img{width:34px;height:34px;border-radius:4px;flex:none;background:var(--panel3)}
+  .hbtn span:first-of-type{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .caret{width:0;height:0;border:5px solid transparent;border-top:6px solid var(--muted);margin-top:5px}
+  .hpop{position:absolute;right:16px;top:calc(100% - 8px);z-index:30;width:min(600px,calc(100vw - 40px));background:var(--panel);border:1px solid var(--gold2);border-radius:8px;box-shadow:0 14px 40px rgba(0,0,0,.6);padding:10px}
+  .hpop input{width:100%;height:38px;padding:6px 10px;border:1px solid var(--line);border-radius:6px;background:var(--panel2);color:var(--ink);font:500 .95rem "IBM Plex Sans",sans-serif;margin-bottom:10px}
+  .hgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:6px;max-height:min(420px,55vh);overflow-y:auto;padding-right:2px}
+  .hcard{display:flex;flex-direction:column;align-items:center;gap:4px;padding:4px 2px;border:1px solid transparent;border-radius:6px;background:transparent;color:var(--ink2);cursor:pointer;font:500 .7rem/1.15 "IBM Plex Sans",sans-serif;text-align:center}
+  .hcard img{width:56px;height:56px;border-radius:5px;background:var(--panel3);box-shadow:0 0 0 1px rgba(0,0,0,.6)}
+  .hcard span{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .hcard:hover,.hcard.sel{border-color:var(--gold);background:var(--panel2);color:var(--ink)}
+  .hcard.cur img{box-shadow:0 0 0 2px var(--gold)}
+  @media (max-width:760px){.hpop{left:16px;right:16px;width:auto}}
   .rrrow{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
   .rrrow .lab{margin-bottom:0}
   .num{width:4.2em;height:32px;padding:4px 8px;border:1px solid var(--gold2);border-radius:6px;background:var(--panel2);color:var(--ink);font:600 1rem "IBM Plex Sans",sans-serif;text-align:right;font-variant-numeric:tabular-nums;-moz-appearance:textfield}
@@ -139,7 +153,11 @@
       <div class="name" id="hname"></div>
       <div class="ult"><span class="uicon" id="uicon"><img id="uimg" alt=""></span><div class="utxt"><div class="uname" id="uname"></div><div class="usub" id="usub"></div></div></div>
     </div>
-    <div class="pick"><div><div class="lab">Hero</div><select id="hero" aria-label="Hero"></select></div></div>
+    <div class="pick"><div><div class="lab">Hero</div>
+      <select id="hero" aria-label="Hero" hidden></select>
+      <button type="button" class="hbtn" id="heroBtn" aria-haspopup="listbox" aria-expanded="false"><img id="hbImg" alt=""><span id="hbName"></span><span class="caret"></span></button>
+      <div class="hpop" id="heroPop" hidden><input type="search" id="hq" placeholder="Type a hero name" autocomplete="off" aria-label="Search heroes"><div class="hgrid" id="hgrid" role="listbox"></div></div>
+    </div></div>
     <div class="bar" id="bar">
       <div class="barhd" id="barhd"></div>
       <div class="track"><div class="fill" id="fill"></div><div class="cover" id="cover"></div></div>
@@ -210,6 +228,19 @@ const DATA={"ui":{"frame":"img/frame.webp","barfill":"img/barfill.webp","barbg":
   H.forEach(h=>{const o=document.createElement('option');o.value=h.id;o.textContent=h.nm;sel.appendChild(o);});
   sel.value=DATA.default;
   let cur=H.find(h=>h.id==DATA.default)||H[0], bps=[], showAll=false;
+  // ---- portrait picker ----
+  const hb=$('heroBtn'), hp=$('heroPop'), hq=$('hq'), hg=$('hgrid');
+  H.forEach(h=>{ const c=document.createElement('button'); c.type='button'; c.className='hcard'; c.dataset.id=h.id; c.setAttribute('role','option');
+    c.innerHTML=(h.pic?'<img loading="lazy" src="'+h.pic+'" alt="">':'<img alt="">')+'<span>'+h.nm+'</span>'; c.addEventListener('click',()=>{choose(h.id);}); hg.appendChild(c); });
+  function choose(id){ sel.value=id; closePop(); pick(); }
+  function openPop(){ hp.hidden=false; hb.setAttribute('aria-expanded','true'); hq.value=''; filterPop(); hq.focus(); const c=hg.querySelector('.hcard.cur'); if(c) hg.scrollTop=Math.max(0,c.offsetTop-hg.clientHeight/2+c.offsetHeight/2); }
+  function closePop(){ hp.hidden=true; hb.setAttribute('aria-expanded','false'); }
+  function filterPop(){ const q=hq.value.trim().toLowerCase(); let first=null; hg.querySelectorAll('.hcard').forEach(c=>{ const h=H.find(x=>x.id==c.dataset.id); const ok=!q||h.nm.toLowerCase().includes(q); c.style.display=ok?'':'none'; c.classList.toggle('cur',h.id===cur.id); c.classList.remove('sel'); if(ok&&!first)first=c; }); if(q&&first) first.classList.add('sel'); }
+  hb.addEventListener('click',()=>{ hp.hidden?openPop():closePop(); });
+  hq.addEventListener('input',filterPop);
+  hq.addEventListener('keydown',e=>{ if(e.key==='Enter'){ const f=hg.querySelector('.hcard.sel')||[...hg.querySelectorAll('.hcard')].find(c=>c.style.display!=='none'); if(f) choose(+f.dataset.id); } else if(e.key==='Escape'){ closePop(); hb.focus(); } });
+  document.addEventListener('click',e=>{ if(!hp.hidden&&!hp.contains(e.target)&&e.target!==hb&&!hb.contains(e.target)) closePop(); });
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&!hp.hidden) closePop(); });
   const stepsBox=$('rrsteps');
   RR_LINES.forEach(v=>{const b=document.createElement('button');b.type='button';b.textContent=v+'%';b.dataset.v=v;b.addEventListener('click',()=>setRR(v));stepsBox.appendChild(b);});
   function setRR(v){ rr=Math.max(0,Math.min(300,Math.round(v))); render(); }
@@ -220,7 +251,7 @@ const DATA={"ui":{"frame":"img/frame.webp","barfill":"img/barfill.webp","barbg":
     cur=H.find(h=>h.id==+sel.value)||cur; bps=bpsOf(cur); showAll=false;
     const bust=$('bust'); if(cur.bust){bust.style.backgroundImage='url('+cur.bust+')';bust.classList.remove('none');} else if(cur.pic){bust.style.backgroundImage='url('+cur.pic+')';bust.style.backgroundSize='132px 132px';bust.classList.remove('none');} else {bust.style.backgroundImage='none';bust.classList.add('none');}
     if(cur.bust) bust.style.backgroundSize='';
-    $('hname').textContent=cur.nm;
+    $('hname').textContent=cur.nm; $('hbName').textContent=cur.nm; const hbi=$('hbImg'); if(cur.pic){hbi.src=cur.pic;hbi.style.visibility='';} else {hbi.removeAttribute('src');hbi.style.visibility='hidden';}
     const u=cur.ult, ui=$('uicon'), img=$('uimg');
     if(u&&u.icon){img.src=u.icon;img.style.display='block';ui.style.display='';} else {img.removeAttribute('src');img.style.display='none';ui.style.display='none';}
     $('uname').textContent=u?(u.nm||'Ultimate'):'No ultimate';
@@ -347,8 +378,8 @@ const DATA={"ui":{"frame":"img/frame.webp","barfill":"img/barfill.webp","barbg":
   sAs.addEventListener('input',render);
   vAs.addEventListener('input',()=>{if(vAs.value==='')return; sAs.value=Math.max(100,Math.min(XCAP,+vAs.value)); render();}); vAs.addEventListener('blur',()=>{vAs.value=sAs.value;});
   vRr.addEventListener('input',()=>{if(vRr.value==='')return; setRR(+vRr.value);}); vRr.addEventListener('blur',()=>{vRr.value=rr;});
-  const openHow=/how=1/.test(location.hash); readHash(); pick();
-  if(openHow) document.querySelector('details').open=true;
+  const openHow=/how=1/.test(location.hash), openPick=/pick=1/.test(location.hash); readHash(); pick();
+  if(openHow) document.querySelector('details').open=true; if(openPick) openPop();
 })();
 </script>
 </body></html>

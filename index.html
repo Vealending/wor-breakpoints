@@ -182,10 +182,10 @@
 
   <section class="card chart">
     <div class="chd">
-      <h2 id="c_title"><span></span><span class="q" tabindex="0" data-tip="One line per Rage Regen level; the orange one is yours. Click a line or its label to switch. Drag the slider or click the chart to set ATK SPD. Blue ticks on the axis are the attack-speed breakpoints.">?</span></h2>
+      <h2 id="c_title"><span></span><span class="q" tabindex="0" data-tip="How many ultimates per minute once the fight is rolling: bar-fill time plus the ultimate's own duration. One line per Rage Regen level; the orange one is yours. Click a line or its label to switch. Drag the slider or click the chart to set ATK SPD. Blue ticks on the axis are the attack-speed breakpoints.">?</span></h2>
       <div class="rrrow"><span class="lab lab-ic" style="margin:0 4px 0 0"><i class="ic" id="icRage"></i>Rage Regen</span><input type="number" class="num" id="v_rr" min="0" max="300" step="1" aria-label="Rage Regen percent"><span class="unit">%</span><div class="steps" id="rrsteps"></div></div>
     </div>
-    <div id="chart" role="img" aria-label="Seconds to fill the rage bar across attack speed, one line per Rage Regen level"></div>
+    <div id="chart" role="img" aria-label="Ultimates per minute across attack speed, one line per Rage Regen level"></div>
     <div class="xs" id="xs">
       <div class="xcover" id="xcover"></div>
       <input type="range" id="s_as" min="100" max="800" step="1" value="100" aria-label="ATK SPD">
@@ -311,7 +311,7 @@ const DATA={"ui":{"frame":"img/frame.webp","barcover":"img/barcover.webp","cardb
     stepsBox.querySelectorAll('button').forEach(b=>b.classList.toggle('on',+b.dataset.v===rr));
     const iv=ivMs(h,as), T=period(h,as,rr), lock=lockS(h), F=firstUlt(h,as,rr), fs=fillS(h,as,rr);
     const isUlt=!off(h)&&!noUlt(h);
-    $('c_title').firstChild.textContent=isUlt?'Seconds to fill the rage bar':'Seconds between attacks';
+    $('c_title').firstChild.textContent=isUlt?'Ultimates per minute':'Attacks per minute';
     // rage bar strip
     const bar=$('bar');
     bar.classList.toggle('off',!isUlt);
@@ -319,7 +319,7 @@ const DATA={"ui":{"frame":"img/frame.webp","barcover":"img/barcover.webp","cardb
       $('barhd').innerHTML='<span>Rage bar fills in <b>'+fmt(fs,1)+' s</b> at '+as+' ATK SPD and '+rr+'% Rage Regen</span><span>'+fmt(rate(h,as,rr),1)+' rage per second</span>';
       const qFirst=Q('Deploys with '+h.ir.toLocaleString()+' of the '+h.ma.toLocaleString()+' rage the ultimate needs.');
       const qThen=lock?Q('Bar-fill time plus the ultimate\'s own '+fmt(lock,0)+' s. The cast resets rage to 0, and the hero\'s own attacks and passive regen are paused for the duration. Rage from other sources, like allies\' skills, still counts.'):Q('The cast resets rage to 0 and regen resumes on the next frame; this ultimate has no duration.');
-      $('barft').innerHTML='<span>First ult '+(F<=0.05?'ready on deploy':'<b>'+fmt(F,1)+' s</b> after deploy')+qFirst+', then every <span style="white-space:nowrap"><b>'+fmt(T,1)+' s</b>'+qThen+'</span>.</span><span>Attacks every <b>'+(iv/1000).toFixed(2)+' s</b> for <b>'+fmt(perAtk(h,as,rr),1)+'</b> rage each.</span>';
+      $('barft').innerHTML='<span>First ult '+(F<=0.05?'ready on deploy':'<b>'+fmt(F,1)+' s</b> after deploy')+qFirst+', then every <span style="white-space:nowrap"><b>'+fmt(T,1)+' s</b>'+qThen+'</span>, so <b>'+fmt(60/T,1)+'</b> a minute.</span><span>Attacks every <b>'+(iv/1000).toFixed(2)+' s</b> for <b>'+fmt(perAtk(h,as,rr),1)+'</b> rage each.</span>';
     } else {
       $('barhd').innerHTML='<span>'+(off(h)?'The ultimate is charged by the kit, not by the rage bar.':'No rage ultimate.')+'</span>';
       $('barft').innerHTML='<span>Attacks every <b>'+(iv/1000).toFixed(2)+' s</b>'+(off(h)?'':' for <b>'+fmt(perAtk(h,as,rr),1)+'</b> rage each')+'.</span>';
@@ -337,7 +337,7 @@ const DATA={"ui":{"frame":"img/frame.webp","barcover":"img/barcover.webp","cardb
   const GRID={left:56,right:54,top:16,bottom:34};
   function drawChart(h,as,isUlt){
     const muted=cssv('--muted'),grid=cssv('--grid'),line=cssv('--line'),rage=cssv('--rage'),spd=cssv('--spd'),mark=cssv('--mark'),ghost=cssv('--ghost'),panel=cssv('--panel'),ink=cssv('--ink');
-    const f=isUlt?((a,r)=>fillS(h,a,r)):((a)=>ivMs(h,a)/1000), color=isUlt?rage:spd;
+    const f=isUlt?((a,r)=>60/period(h,a,r)):((a)=>60000/ivMs(h,a)), color=isUlt?rage:spd;
     const levels=isUlt?[...new Set([...RR_LINES,rr])].sort((a,b)=>a-b):[rr];
     const pts=r=>{const o=[]; for(let a=100;a<=XCAP;a++) o.push([a,+f(a,r).toFixed(4)]); return o;};
     let lo=Infinity,hi=0; const data={}; for(const r of levels){ data[r]=pts(r); for(const p of data[r]){lo=Math.min(lo,p[1]);hi=Math.max(hi,p[1]);} }
@@ -351,17 +351,17 @@ const DATA={"ui":{"frame":"img/frame.webp","barcover":"img/barcover.webp","cardb
       endLabel:isUlt?{show:true,formatter:rr+'%',color,fontSize:11,fontWeight:600,offset:[4,0]}:{show:false},emphasis:{disabled:true},
       markPoint:{silent:true,data:[]},markLine:{silent:true,symbol:'none',lineStyle:{color:mark,opacity:.45,width:1,type:'solid'},label:{show:false},data:[{xAxis:as}]}};
     const mp=[{coord:[as,+f(as,rr).toFixed(4)],symbol:'circle',symbolSize:12,itemStyle:{color:mark,borderColor:panel,borderWidth:2},label:{show:false}}];
-    if(isUlt&&h.bs>0){ const pk=peakOf(h,rr); if(pk<XCAP&&Math.abs(pk-as)>8) mp.unshift({coord:[pk,+f(pk,rr).toFixed(4)],symbol:'circle',symbolSize:8,itemStyle:{color,borderColor:panel,borderWidth:2},label:{show:true,formatter:'fastest at '+pk,position:'bottom',distance:8,color,fontSize:11,fontWeight:500}}); }
+    if(isUlt&&h.bs>0){ const pk=peakOf(h,rr); if(pk<XCAP&&Math.abs(pk-as)>8) mp.unshift({coord:[pk,+f(pk,rr).toFixed(4)],symbol:'circle',symbolSize:8,itemStyle:{color,borderColor:panel,borderWidth:2},label:{show:true,formatter:'best at '+pk,position:'top',distance:8,color,fontSize:11,fontWeight:500}}); }
     main.markPoint.data=mp; series.push(main);
     series.push({type:'scatter',name:'bp',data:bps.map(b=>[b.a,y0]),symbol:'rect',symbolSize:[1.5,7],symbolOffset:[0,4],itemStyle:{color:spd},silent:true,z:2,tooltip:{show:false}});
     chart.setOption({
       animation:false,backgroundColor:'transparent',grid:GRID,
       xAxis:{type:'value',min:100,max:XCAP,interval:100,axisLine:{lineStyle:{color:line}},axisTick:{show:false},splitLine:{show:false},axisLabel:{color:muted,fontSize:11,fontFamily:'IBM Plex Sans'},z:2},
-      yAxis:{type:'value',min:y0,max:y1,interval:step,axisLine:{show:false},axisTick:{show:false},splitLine:{lineStyle:{color:grid}},axisLabel:{color:muted,fontSize:11,fontFamily:'IBM Plex Sans',formatter:v=>fmt(v,step<1?1:0)+' s'}},
+      yAxis:{type:'value',min:y0,max:y1,interval:step,axisLine:{show:false},axisTick:{show:false},splitLine:{lineStyle:{color:grid}},axisLabel:{color:muted,fontSize:11,fontFamily:'IBM Plex Sans',formatter:v=>fmt(v,step<1?1:0)}},
       tooltip:{trigger:'axis',axisPointer:{type:'line',lineStyle:{color:muted,width:1},label:{show:false}},backgroundColor:'rgba(28,32,43,.96)',borderColor:'#a3833d',borderWidth:1,textStyle:{color:'#ece7db',fontSize:12,fontFamily:'IBM Plex Sans'},padding:[8,11],transitionDuration:0,extraCssText:'box-shadow:0 8px 24px rgba(0,0,0,.5);border-radius:6px',
         formatter:ps=>{ const a=Math.round(ps[0].axisValue); const rows=['<b>ATK SPD '+a+'</b>','attack every '+(ivMs(h,a)/1000).toFixed(2)+' s'];
           if(!off(h)) rows.push(fmt(perAtk(h,a,rr),1)+' rage per attack, '+fmt(rate(h,a,rr),1)+' per second');
-          if(isUlt) rows.push('bar full in '+fmt(fillS(h,a,rr),1)+' s at '+rr+'% Rage Regen'); return rows.join('<br>'); }},
+          if(isUlt) rows.push('ult every '+fmt(period(h,a,rr),1)+' s, '+fmt(60/period(h,a,rr),2)+' per minute at '+rr+'% Rage Regen'); return rows.join('<br>'); }},
       series
     },true);
     const w=$('chart').clientWidth, pw=Math.max(120,w-GRID.left-GRID.right);

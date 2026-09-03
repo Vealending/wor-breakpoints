@@ -88,8 +88,8 @@
   .cover{display:none}
   .track{margin:2px 0}
   .bar.off .track{opacity:.35}
-  .barft{display:flex;flex-wrap:wrap;gap:2px 18px;font-size:.9rem;color:var(--ink2)}
-  .barft>span{white-space:nowrap}
+  .barft{font-size:.9rem;color:var(--ink2)}
+  .barft>span{white-space:normal}
   .barft b{font-weight:600;color:var(--gold);font-variant-numeric:tabular-nums}
   @media (max-width:860px){
     .hero{grid-template-columns:296px minmax(0,1fr);grid-template-rows:132px auto auto}
@@ -319,7 +319,7 @@ const DATA={"ui":{"frame":"img/frame.webp","barcover":"img/barcover.webp","cardb
       $('barhd').innerHTML='<span>Rage bar fills in <b>'+fmt(fs,1)+' s</b> at '+as+' ATK SPD and '+rr+'% Rage Regen</span><span>'+fmt(rate(h,as,rr),1)+' rage per second</span>';
       const qFirst=Q('Deploys with '+h.ir.toLocaleString()+' of the '+h.ma.toLocaleString()+' rage the ultimate needs.');
       const qThen=lock?Q('Bar-fill time plus the ultimate\'s own '+fmt(lock,0)+' s. The cast resets rage to 0, and the hero\'s own attacks and passive regen are paused for the duration. Rage from other sources, like allies\' skills, still counts.'):Q('The cast resets rage to 0 and regen resumes on the next frame; this ultimate has no duration.');
-      $('barft').innerHTML='<span>First ult '+(F<=0.05?'ready on deploy':'<b>'+fmt(F,1)+' s</b> after deploy')+qFirst+', then every <span style="white-space:nowrap"><b>'+fmt(T,1)+' s</b>'+qThen+'</span>, so <b>'+fmt(60/T,1)+'</b> a minute.</span><span>Attacks every <b>'+(iv/1000).toFixed(2)+' s</b> for <b>'+fmt(perAtk(h,as,rr),1)+'</b> rage each.</span>';
+      $('barft').innerHTML='<span>First ult '+(F<=0.05?'ready on deploy':'<b>'+fmt(F,1)+' s</b> after deploy')+qFirst+', then every <span style="white-space:nowrap"><b>'+fmt(T,1)+' s</b>'+qThen+'</span>, so <b>'+fmt(60/T,1)+'</b> a minute. Attacks every <b>'+(iv/1000).toFixed(2)+' s</b> for <b>'+fmt(perAtk(h,as,rr),1)+'</b> rage each.</span>';
     } else {
       $('barhd').innerHTML='<span>'+(off(h)?'The ultimate is charged by the kit, not by the rage bar.':'No rage ultimate.')+'</span>';
       $('barft').innerHTML='<span>Attacks every <b>'+(iv/1000).toFixed(2)+' s</b>'+(off(h)?'':' for <b>'+fmt(perAtk(h,as,rr),1)+'</b> rage each')+'.</span>';

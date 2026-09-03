@@ -15,7 +15,7 @@
   *{box-sizing:border-box}
   html,body{overflow-x:hidden}
   body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "IBM Plex Sans",-apple-system,"Segoe UI",Roboto,Arial,sans-serif;-webkit-font-smoothing:antialiased;
-    background-image:radial-gradient(1100px 520px at 50% -160px,rgba(90,120,190,.16),transparent 70%),radial-gradient(700px 300px at 85% 10%,rgba(150,60,60,.10),transparent 70%)}
+    background-image:radial-gradient(1100px 520px at 50% -160px,rgba(90,120,190,.16),transparent 70%),radial-gradient(700px 300px at 85% 10%,rgba(150,60,60,.10),transparent 70%);background-repeat:no-repeat}
   .wrap{max-width:960px;margin:0 auto;padding:22px 20px 44px;display:grid;gap:16px}
   .wrap>*{min-width:0}
   .site{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 16px;margin:0 2px -4px}
@@ -75,13 +75,11 @@
   .barhd{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:4px 16px;font-size:.92rem;color:var(--ink2)}
   .barhd b{color:var(--gold);font-weight:600;font-variant-numeric:tabular-nums}
   .track{position:relative;height:22px;border-radius:3px;background:linear-gradient(#16130f,#0a0907);box-shadow:inset 0 0 0 1px #000,0 0 0 1px var(--gold2);margin:2px 12px}
-  .fill{position:absolute;inset:3px auto 3px 3px;width:35%;border-radius:2px;background:linear-gradient(#ffb060,#f07a25 55%,#b8501a);background-size:100% 100%;
-    animation:fill linear infinite;box-shadow:0 0 10px rgba(255,139,58,.45)}
+  .fill{position:absolute;inset:3px auto 3px 3px;width:0;border-radius:2px;background:linear-gradient(#ffb060,#f07a25 55%,#b8501a);background-size:100% 100%;box-shadow:0 0 10px rgba(255,139,58,.45);transition:width .25s}
   .fill.sprite{background-image:var(--barfill);background-size:100% 100%}
-  @keyframes fill{0%{width:0}92%{width:calc(100% - 6px)}100%{width:calc(100% - 6px)}}
-  .cover{position:absolute;inset:-7px -16px;background-image:var(--barcover);background-size:100% 100%;background-repeat:no-repeat;pointer-events:none;opacity:.9}
+  .cover{display:none}
+  .track{margin:2px 0}
   .bar.off .track{opacity:.35}
-  @media (prefers-reduced-motion:reduce){.fill{animation:none;width:calc(100% - 4px)}}
   .barft{display:flex;flex-wrap:wrap;gap:2px 18px;font-size:.9rem;color:var(--ink2)}
   .barft>span{white-space:nowrap}
   .barft b{font-weight:600;color:var(--gold);font-variant-numeric:tabular-nums}
@@ -101,7 +99,7 @@
 
   /* hover help */
   .q{display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;border-radius:50%;border:1px solid var(--faint);color:var(--muted);font-size:.66rem;font-weight:600;line-height:1;margin-left:5px;vertical-align:1px;cursor:help;position:relative;background:transparent}
-  .q::after{content:attr(data-tip);position:absolute;left:50%;bottom:calc(100% + 8px);transform:translateX(-50%);width:max-content;max-width:300px;background:#f3ecdc;color:#1a1713;font:400 .8rem/1.4 "IBM Plex Sans",sans-serif;padding:8px 10px;border-radius:6px;opacity:0;pointer-events:none;transition:opacity .1s;z-index:20;white-space:normal;text-align:left;box-shadow:0 6px 20px rgba(0,0,0,.5)}
+  .q::after{content:attr(data-tip);position:absolute;left:50%;bottom:calc(100% + 8px);transform:translateX(-50%);width:max-content;max-width:300px;background:#f3ecdc;color:#1a1713;font:400 .8rem/1.4 "IBM Plex Sans",sans-serif;text-transform:none;letter-spacing:0;font-weight:400;padding:8px 10px;border-radius:6px;opacity:0;pointer-events:none;transition:opacity .1s;z-index:20;white-space:normal;text-align:left;box-shadow:0 6px 20px rgba(0,0,0,.5)}
   .q:hover::after,.q:focus::after{opacity:1}
 
   /* chart card */
@@ -109,7 +107,8 @@
   .chd{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px 16px;margin-bottom:4px}
   #chart{width:100%;height:380px}
   .xs{position:relative;height:46px}
-  .xs input[type=range]{position:absolute;top:16px;height:22px;margin:0;cursor:pointer;accent-color:var(--spd);display:block}
+  .xs input[type=range]{position:absolute;top:16px;height:22px;margin:0;cursor:pointer;accent-color:var(--spd);display:block;z-index:1}
+  .xcover{position:absolute;top:13px;height:28px;background-image:var(--barcover);background-size:100% 100%;background-repeat:no-repeat;pointer-events:none;opacity:.85}
   .bubble{position:absolute;top:-6px;transform:translateX(-50%);display:flex;align-items:baseline;gap:4px;background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:1px 6px 1px 4px;font-size:.76rem;color:var(--muted);white-space:nowrap}
   .bubble input{width:3.4em;border:0;background:transparent;color:var(--ink);font:600 .95rem "IBM Plex Sans",sans-serif;text-align:right;padding:0;-moz-appearance:textfield;font-variant-numeric:tabular-nums}
   .bubble input::-webkit-outer-spin-button,.bubble input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
@@ -172,6 +171,7 @@
     </div>
     <div id="chart" role="img" aria-label="Seconds to fill the rage bar across attack speed, one line per Rage Regen level"></div>
     <div class="xs" id="xs">
+      <div class="xcover" id="xcover"></div>
       <input type="range" id="s_as" min="100" max="800" step="1" value="100" aria-label="ATK SPD">
       <div class="bubble" id="bubble"><input type="number" id="v_as" min="100" max="800" step="1" aria-label="ATK SPD value"><span>ATK SPD</span></div>
     </div>
@@ -223,7 +223,7 @@ const DATA={"ui":{"frame":"img/frame.webp","barfill":"img/barfill.webp","barbg":
   let rr=0;
   $('bver').textContent=DATA.build;
   if(UI.barfill){ $('fill').classList.add('sprite'); $('fill').style.setProperty('--barfill','url('+UI.barfill+')'); }
-  if(UI.barcover) $('cover').style.setProperty('--barcover','url('+UI.barcover+')'); else $('cover').style.display='none';
+  if(UI.barcover) $('xcover').style.setProperty('--barcover','url('+UI.barcover+')'); else $('xcover').style.display='none';
   if(UI.frame) $('uicon').style.backgroundImage='url('+UI.frame+')';
   H.forEach(h=>{const o=document.createElement('option');o.value=h.id;o.textContent=h.nm;sel.appendChild(o);});
   sel.value=DATA.default;
@@ -286,7 +286,6 @@ const DATA={"ui":{"frame":"img/frame.webp","barfill":"img/barfill.webp","barbg":
     return n;
   }
 
-  let lastAnim='';
   function render(){
     const h=cur, as=+sAs.value;
     if(document.activeElement!==vAs) vAs.value=as; if(document.activeElement!==vRr) vRr.value=rr;
@@ -298,17 +297,17 @@ const DATA={"ui":{"frame":"img/frame.webp","barfill":"img/barfill.webp","barbg":
     const bar=$('bar'), fill=$('fill');
     bar.classList.toggle('off',!isUlt);
     if(isUlt){
-      $('barhd').innerHTML='<span>Rage bar fills in <b>'+fmt(fs,1)+' s</b></span><span>'+fmt(rate(h,as,rr),1)+' rage per second</span>';
-      const key=fs.toFixed(2); if(key!==lastAnim){ lastAnim=key; fill.style.animation='none'; void fill.offsetWidth; fill.style.animation=''; fill.style.animationDuration=(fs*1.08).toFixed(2)+'s'; fill.style.animationDelay=(-fs*0.38).toFixed(2)+'s'; }
+      const share=Math.max(0,Math.min(1,h.ir/h.ma));
+      $('barhd').innerHTML='<span>On deploy the bar starts at <b>'+h.ir.toLocaleString()+'</b> of <b>'+h.ma.toLocaleString()+'</b> rage</span><span>fills in <b>'+fmt(fs,1)+' s</b>, '+fmt(rate(h,as,rr),1)+' rage per second</span>';
+      fill.style.width='calc((100% - 6px) * '+share.toFixed(4)+')';
       const qFirst=Q('Deploys with '+h.ir.toLocaleString()+' of the '+h.ma.toLocaleString()+' rage the ultimate needs.');
       const qThen=lock?Q('Bar-fill time plus the ultimate\'s own '+fmt(lock,0)+' s. The cast resets rage to 0, and the hero\'s own attacks and passive regen are paused for the duration. Rage from other sources, like allies\' skills, still counts.'):Q('The cast resets rage to 0 and regen resumes on the next frame; this ultimate has no duration.');
       $('barft').innerHTML='<span>First ult '+(F<=0.05?'ready on deploy':'<b>'+fmt(F,1)+' s</b> after deploy')+qFirst+', then every <span style="white-space:nowrap"><b>'+fmt(T,1)+' s</b>'+qThen+'</span>.</span><span>Attacks every <b>'+(iv/1000).toFixed(2)+' s</b> for <b>'+fmt(perAtk(h,as,rr),1)+'</b> rage each.</span>';
     } else {
-      fill.style.animation='none'; fill.style.width='0';
+      fill.style.width='0';
       $('barhd').innerHTML='<span>'+(off(h)?'The ultimate is charged by the kit, not by the rage bar.':'No rage ultimate.')+'</span>';
       $('barft').innerHTML='<span>Attacks every <b>'+(iv/1000).toFixed(2)+' s</b>'+(off(h)?'':' for <b>'+fmt(perAtk(h,as,rr),1)+'</b> rage each')+'.</span>';
     }
-    if(isUlt) fill.style.width='';
     $('notes').innerHTML=notesFor(h).map(t=>'<div>'+t+'</div>').join('');
     if(!showAll&&bps.length>40&&!document.querySelector('.chip[data-a="'+([...bps].filter(b=>b.a<=as).map(b=>b.a).pop())+'"]')) buildChips();
     markChips();
@@ -350,7 +349,7 @@ const DATA={"ui":{"frame":"img/frame.webp","barfill":"img/barfill.webp","barbg":
       series
     },true);
     const w=$('chart').clientWidth, pw=Math.max(120,w-GRID.left-GRID.right);
-    sAs.style.left=GRID.left+'px'; sAs.style.width=pw+'px';
+    sAs.style.left=GRID.left+'px'; sAs.style.width=pw+'px'; const xc=$('xcover'); xc.style.left=(GRID.left-18)+'px'; xc.style.width=(pw+36)+'px';
     const thumb=GRID.left+8+(as-100)/(XCAP-100)*(pw-16); $('bubble').style.left=Math.max(GRID.left+40,Math.min(GRID.left+pw-40,thumb))+'px';
   }
   let lineClickAt=0;

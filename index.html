@@ -20,7 +20,8 @@
   input[type=search]::-webkit-search-cancel-button{-webkit-appearance:none;appearance:none}
   html,body{overflow-x:hidden}
   body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "IBM Plex Sans",-apple-system,"Segoe UI",Roboto,Arial,sans-serif;-webkit-font-smoothing:antialiased;
-    background-image:linear-gradient(180deg,rgba(18,21,29,.55) 0%,rgba(18,21,29,.82) 45%,var(--bg) 100%),var(--pagebg,none);background-repeat:no-repeat;background-size:100% auto,100% auto;background-position:top center;background-attachment:scroll}
+    position:relative}
+  .backdrop{position:absolute;left:0;right:0;top:0;height:min(48vw,760px);background:var(--pagebg,none) top center/cover no-repeat;opacity:.55;pointer-events:none;z-index:-1;-webkit-mask-image:linear-gradient(#000 25%,rgba(0,0,0,.55) 60%,transparent 100%);mask-image:linear-gradient(#000 25%,rgba(0,0,0,.55) 60%,transparent 100%)}
   .wrap{max-width:960px;margin:0 auto;padding:22px 20px 44px;display:grid;gap:16px}
   .wrap>*{min-width:0}
   .site{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 16px;margin:0 2px -4px}
@@ -73,7 +74,7 @@
   .num::-webkit-outer-spin-button,.num::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
   .unit{color:var(--muted);font-size:.9rem;margin-right:4px}
   .steps{display:flex;gap:4px}
-  .steps button{height:32px;min-width:58px;border:0;background:var(--taboff,var(--panel2));background-size:100% 100%;background-repeat:no-repeat;color:var(--ink);border-radius:4px;padding:0 10px;font:600 .8rem "IBM Plex Sans",sans-serif;cursor:pointer;font-variant-numeric:tabular-nums;text-shadow:0 1px 1px rgba(0,0,0,.8)}
+  .steps button{height:32px;min-width:58px;border:0;background:var(--taboff,var(--panel2));background-size:100% 100%;background-repeat:no-repeat;color:var(--ink);border-radius:4px;padding:0 10px 4px;font:600 .8rem "IBM Plex Sans",sans-serif;cursor:pointer;font-variant-numeric:tabular-nums;text-shadow:0 1px 1px rgba(0,0,0,.8)}
   .steps button:hover{filter:brightness(1.15)}
   .steps button.on{filter:brightness(1.35) saturate(1.15) drop-shadow(0 0 1px var(--gold)) drop-shadow(0 0 4px rgba(240,194,90,.7));color:#fff}
   .pick select,.num{border-color:var(--line)}
@@ -161,6 +162,7 @@
   @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style></head><body>
 
+<div class="backdrop"></div>
 <div class="wrap">
   <header class="site"><span class="brand">WoR Breakpoints</span><span class="tag">ATK SPD breakpoints and rage timing for every Watcher of Realms hero</span></header>
   <section class="card hero" aria-label="Hero">

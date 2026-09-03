@@ -108,7 +108,7 @@
 
   /* hover help */
   .q{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;border:1px solid var(--faint);color:var(--muted);font-size:.66rem;font-weight:600;line-height:1;margin-left:5px;vertical-align:1px;cursor:help;position:relative;background:transparent}
-  .q.ic{border:0;color:transparent;background:var(--icq) center/contain no-repeat;opacity:.6;width:14px;height:14px;margin-left:4px}
+  .q.ic{border:0;color:transparent;background:var(--icq) center/contain no-repeat;opacity:.6;width:14px;height:14px;margin:0 -1px 0 3px}
   .q.ic:hover{opacity:1}
   .q::after{content:attr(data-tip);position:absolute;left:50%;bottom:calc(100% + 8px);transform:translateX(-50%);width:max-content;max-width:300px;background:#1c202b;color:var(--ink);font:400 .8rem/1.4 "IBM Plex Sans",sans-serif;text-transform:none;letter-spacing:0;font-weight:400;padding:10px 12px;border:10px solid transparent;border-image:var(--tip,none) 24 fill / 10px;border-radius:6px;opacity:0;pointer-events:none;transition:opacity .1s;z-index:20;white-space:normal;text-align:left;box-shadow:0 6px 20px rgba(0,0,0,.5)}
   .q:hover::after,.q:focus::after{opacity:1}

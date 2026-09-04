@@ -206,7 +206,7 @@
     <summary>How this is computed</summary>
     <div class="body" id="how"></div>
   </details>
-  <p class="foot">Client&nbsp;<span id="bver"></span>, ultimates at max level<span class="q" tabindex="0" data-tip="Steady state from the client's own data and code, cross-checked against WoRSim, a deterministic reimplementation of the combat engine that reproduces captured battles frame for frame. Rage from skills, gear procs and Rage Regen (Attacked) is not included, so heroes that get hit or have rage-feeding kits ult faster than shown.">?</span></p>
+  <p class="foot">Client&nbsp;<span id="bver"></span>, ultimates at max level<span class="q" tabindex="0" data-tip="Steady state from the client's own data and code. Rage from skills, gear procs and Rage Regen (Attacked) is not included, so heroes that get hit or have rage-feeding kits ult faster than shown.">?</span></p>
 </div>
 
 <script>
@@ -390,7 +390,7 @@ const DATA={"ui":{"frame":"img/frame.webp","barcover":"img/barcover.webp","cardb
     }
     const c=[['BaseSpeed',h.bs],['MinSpeed',h.ms],['MaxAnger (base)',h.ma0],['Skill Cost change at max ult level',h.ma-h.ma0],['Initial Rage at max ult level',h.ir],['AngerRecovery',h.ar],['nAttackAnger',h.naa],['AttackAngerHedging',h.hg||'none'],['HitAngerRecovery',h.har],['ExtraUltimateCharges',h.xc]];
     if(h.ult) c.push(['Ultimate',h.ult.nm+(h.ult.lt.length?', '+(h.ult.lt[h.ult.lt.length-1]/1000)+' s at max level':'')]);
-    $('how').innerHTML='<ol>'+li.join('')+'</ol><p>Rage Regen (Attacked), which is HitAngerRecovery × (1 + Rage Regen) per damaging hit taken, and rage from skills are not included. Constants for '+h.nm+' from the client data tables:</p><table>'+c.map(r=>'<tr><td>'+r[0]+'</td><td class="n">'+(typeof r[1]==='number'?r[1].toLocaleString():r[1])+'</td></tr>').join('')+'</table><p>Globals: hedging offset '+HEDGE_OFF+', floor '+HEDGE_MIN+'%, speed curve '+SP_NUM+' ÷ ('+SP_DEN+' + ATK SPD), '+FRAME+' ms per frame. Formulas were read from the game client's decompiled anger and attack-cooldown code and match WoRSim, a deterministic reimplementation of the engine that reproduces captured battles frame for frame. Attack animations speed up in step with ATK SPD (the client scales the attack script by original over current cooldown), so they never cap the interval. Data as of '+DATA.built+'.</p>';
+    $('how').innerHTML='<ol>'+li.join('')+'</ol><p>Rage Regen (Attacked), which is HitAngerRecovery × (1 + Rage Regen) per damaging hit taken, and rage from skills are not included. Constants for '+h.nm+' from the client data tables:</p><table>'+c.map(r=>'<tr><td>'+r[0]+'</td><td class="n">'+(typeof r[1]==='number'?r[1].toLocaleString():r[1])+'</td></tr>').join('')+'</table><p>Globals: hedging offset '+HEDGE_OFF+', floor '+HEDGE_MIN+'%, speed curve '+SP_NUM+' ÷ ('+SP_DEN+' + ATK SPD), '+FRAME+' ms per frame. Formulas were read from the game client's decompiled anger and attack-cooldown code and verified against captured battles. Attack animations speed up in step with ATK SPD (the client scales the attack script by original over current cooldown), so they never cap the interval. Data as of '+DATA.built+'.</p>';
   }
 
   sel.addEventListener('change',pick);
